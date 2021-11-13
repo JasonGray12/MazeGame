@@ -192,6 +192,8 @@ void Game::Draw()
 	actorCursorPosition.X = m_player.GetXPosition();
 	actorCursorPosition.Y = m_player.GetYPosition();
 	SetConsoleCursorPosition(console, actorCursorPosition);
+
+	m_player.Draw();
 	
 	// Set the cursor to the end of the level 
 	COORD currentCursorPosition;

@@ -162,6 +162,7 @@ bool Level::Convert(int* playerX, int* playerY)
 			case '$':
 				m_pLevelData[index] = ' ';
 				m_pActors.push_back(new Money(x, y, 1 + rand() % 5));
+				break;
 			case '@':
 				m_pLevelData[index] = ' ';
 				if (playerX != nullptr && playerY != nullptr)
