@@ -20,6 +20,7 @@ constexpr int kUpArrow = 72;
 constexpr int kDownArrow = 80;
 
 constexpr int kEscape = 27;
+constexpr int kBackspace = 8;
 
 void GetLevelDimensions(int& width, int& height);
 void DisplayLevel(char* pLevel, int width, int height, int cursorX, int cursorY);
@@ -30,6 +31,7 @@ void DisplayBottomBorder(int width);
 void DisplayRightBorder();
 bool EditLevel(char* pLevel, int& cursorX, int& cursorY, int width, int height);
 void SaveLevel(char* pLevel, int width, int height);
+void DisplayLegend();
 
 int main()
 {
@@ -53,6 +55,7 @@ int main()
 	{
 		system("cls");
 		DisplayLevel(pLevel, levelWidth, levelHeight, cursorX, cursorY);
+		DisplayLegend();
 		doneEditing = EditLevel(pLevel, cursorX, cursorY, levelWidth, levelHeight);
 	}
 
@@ -64,6 +67,21 @@ int main()
 
 	delete[] pLevel;
 	pLevel = nullptr;
+}
+
+void DisplayLegend()
+{
+	cout << "Arrows to move cursor" << endl;
+	cout << "ESC to finish editing" << endl;
+	cout << "+ | - for walls" << endl;
+	cout << "@ for player start" << endl;
+	cout << "r g b for door" << endl;
+	cout << "R G B for door" << endl;
+	cout << "$ for money" << endl;
+	cout << "v for verticle moving enemy" << endl;
+	cout << "h for horizontal moving enemy" << endl;
+	cout << "e for non-moving enemy" << endl;
+	cout << "X for end point" << endl;
 }
 
 void GetLevelDimensions(int& width, int& height)
@@ -180,6 +198,10 @@ bool EditLevel(char* pLevel, int& cursorX, int& cursorY, int width, int height)
 		if (intInput == kEscape)
 		{
 			return true;
+		}
+		else if (intInput == kBackspace)
+		{
+			// ignore
 		}
 		else
 		{
