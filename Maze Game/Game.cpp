@@ -7,7 +7,8 @@
 #include "Door.h"
 #include "Money.h"
 #include "Goal.h"
-
+#include <assert.h>
+#include "AudioManager.h"
 
 using namespace std;
 
@@ -105,68 +106,89 @@ bool Game::Update()
 
 bool Game::HandleCollision(int newPlayerX, int newPlayerY)
 {
+	bool isGameDone = false;
 	PlaceableActor* collidedActor = m_level.UpdateActors(newPlayerX, newPlayerY);
 	if (collidedActor != nullptr && collidedActor->IsActive())
 	{
-		Enemy* collidedEnemy = dynamic_cast<Enemy*>(collidedActor);
-		if (collidedEnemy)
+		switch (collidedActor->GetType())
 		{
-			collidedEnemy->Remove();
-			m_player.SetPosition(newPlayerX, newPlayerY);
+			case ActorType::Enemy:
+			{
+				Enemy* collidedEnemy = dynamic_cast<Enemy*>(collidedActor);
+				assert(collidedEnemy);
+				AudioManager::GetInstance()->PlayLoseLivesSound();
+				collidedEnemy->Remove();
+				m_player.SetPosition(newPlayerX, newPlayerY);
 
-			m_player.DecrementLives();
-			if (m_player.GetLives() < 0)
-			{
-				return true;
-			}
-		}
-		Money* collidedMoney = dynamic_cast<Money*>(collidedActor);
-		if (collidedMoney)
-		{
-			collidedMoney->Remove();
-			m_player.AddMoney(collidedMoney->GetWorth());
-			m_player.SetPosition(newPlayerX, newPlayerY);
-		}
-		Key* collidedKey = dynamic_cast<Key*>(collidedActor);
-		if (collidedKey)
-		{
-			if (!m_player.HasKey())
-			{
-				m_player.PickupKey(collidedKey);
-				collidedKey->Remove();
-				//PlaykeyPickUpSound();
-			}
-		}
-		Door* collidedDoor = dynamic_cast<Door*>(collidedActor);
-		if (collidedDoor)
-		{
-			if (!collidedDoor->IsOpen())
-			{
-				if (m_player.HasKey(collidedDoor->GetColor()))
+				m_player.DecrementLives();
+				if (m_player.GetLives() < 0)
 				{
-					collidedDoor->Open();
-					collidedDoor->Remove();
-					m_player.UseKey();
-					m_player.SetPosition(newPlayerX, newPlayerY);
-					//PlayDoorOpenSound();
+					isGameDone = true;
+				}
+				break;
+			}
+			case ActorType::Money:
+			{
+				Money* collidedMoney = dynamic_cast<Money*>(collidedActor);
+				assert(collidedMoney);
+				AudioManager::GetInstance()->PlayMoneySound();
+				collidedMoney->Remove();
+				m_player.AddMoney(collidedMoney->GetWorth());
+				m_player.SetPosition(newPlayerX, newPlayerY);
+				break;
+			}
+			case ActorType::Key:
+			{
+				Key* collidedKey = dynamic_cast<Key*>(collidedActor);
+				assert(collidedKey);
+				if (!m_player.HasKey())
+				{
+					m_player.PickupKey(collidedKey);
+					collidedKey->Remove();
+					AudioManager::GetInstance()->PlayKeyPickUpSound();
+				}
+				break;
+			}
+			case ActorType::Door:
+			{
+				Door* collidedDoor = dynamic_cast<Door*>(collidedActor);
+				assert(collidedDoor);
+				if (!collidedDoor->IsOpen())
+				{
+					if (m_player.HasKey(collidedDoor->GetColor()))
+					{
+						collidedDoor->Open();
+						collidedDoor->Remove();
+						m_player.UseKey();
+						m_player.SetPosition(newPlayerX, newPlayerY);
+						AudioManager::GetInstance()->PlayOpenDoorSound();
+					}
+					else
+					{
+						AudioManager::GetInstance()->PlayClosedDoorSound();
+					}
 				}
 				else
 				{
-					//PlayDoorClosedSound();
+					m_player.SetPosition(newPlayerX, newPlayerY);
 				}
+				break;
 			}
-			else
+			case ActorType::Goal:
 			{
+				Goal* collidedGoal = dynamic_cast<Goal*>(collidedActor);
+				assert(collidedGoal);
+
+				collidedGoal->Remove();
 				m_player.SetPosition(newPlayerX, newPlayerY);
+				isGameDone = true;
+				break;
+		
 			}
+			default:
+				break;
 		}
-		Goal* collidedGoal = dynamic_cast<Goal*>(collidedActor);
-		if (collidedGoal)
-		{
-			collidedGoal->Remove();
-			m_player.SetPosition(newPlayerX, newPlayerY);
-			return true;
-		}
+	
 	}
 	else if (m_level.IsSpace(newPlayerX, newPlayerY))
 	{
@@ -174,10 +196,10 @@ bool Game::HandleCollision(int newPlayerX, int newPlayerY)
 	}
 	else if (m_level.IsWall(newPlayerX, newPlayerY))
 	{
-		// collided with a wall s9o do nothing 
+		// collided with a wall so do nothing 
 	}
 
-	return false;
+	return isGameDone;
 }
 
 void Game::Draw()

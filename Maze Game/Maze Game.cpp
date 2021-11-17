@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Game.h"
+#include "AudioManager.h"
 
 using namespace std;
 
@@ -22,12 +23,12 @@ int main()
 		else if (myGame.GetPlayerLives() < 0)
 		{
 			cout << "Sorry, you lose!!" << endl;
-			//PlayLoseSound();
+			AudioManager::GetInstance()->PlayLoseSound();
 		}
 		else
 		{
 			cout << "YOU WON!!!!" << endl;
-			//PlayWinSound();
+			AudioManager::GetInstance()->PlayWinSound();
 		}
 
 	}
@@ -35,39 +36,11 @@ int main()
 	{
 		cout << "Game did not load. Terminating now!" << endl;
 	}
+
+	AudioManager::DestroyInstance();
+
+	return 0;
 }	
-
-
-
-//void PlayDoorClosedSound()
-//{
-//	Beep(500, 75);
-//	Beep(500, 75);
-//}
-//
-//void PlayDoorOpenSound()
-//{
-//	Beep(1397, 200);
-//	
-//}
-//
-//void PlayKeyPickUpSound()
-//{
-//	Beep(1568, 200);
-//	
-//}
-//
-//void PlayWinSound()
-//{
-//	Beep(1568, 200);
-//	Beep(1568, 200);
-//	Beep(1568, 200);
-//	Beep(1245, 1000);
-//	Beep(1397, 200);
-//	Beep(1397, 200);
-//	Beep(1397, 200);
-//	Beep(1175, 1000);
-//}
 
 
 
