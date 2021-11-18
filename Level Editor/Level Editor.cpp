@@ -75,8 +75,8 @@ void DisplayLegend()
 	cout << "ESC to finish editing" << endl;
 	cout << "+ | - for walls" << endl;
 	cout << "@ for player start" << endl;
-	cout << "r g b for door" << endl;
-	cout << "R G B for door" << endl;
+	cout << "r g b for keys" << endl;
+	cout << "R G B for doors" << endl;
 	cout << "$ for money" << endl;
 	cout << "v for verticle moving enemy" << endl;
 	cout << "h for horizontal moving enemy" << endl;
@@ -86,7 +86,7 @@ void DisplayLegend()
 
 void GetLevelDimensions(int& width, int& height)
 {
-	cout << "Enter the width of your level: ";
+	cout << "Enter the width of your level(70 x 50): ";
 	cin >> width;
 	cout << "Enter the height of your level: ";
 	cin >> height;
